@@ -1,0 +1,9 @@
+body {
+  font-size: '18px';
+}
+
+.container {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 15px 15px;
+}
