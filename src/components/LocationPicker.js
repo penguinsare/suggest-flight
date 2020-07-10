@@ -1,21 +1,12 @@
-import React, { useState, useRef, useEffect, forwardRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
-  Stack,
   Box,
-  Text,
   Input,
-  Button,
-  RadioGroup,
-  Radio,
-  Icon,
   Popover,
   PopoverTrigger,
-  PopoverArrow,
-  PopoverCloseButton,
   PopoverHeader,
-  PopoverBody,
   PopoverContent,
-  CloseButton,
+  PopoverBody,
 } from '@chakra-ui/core';
 import { getAirportsApi } from '../apiCalls/AirportsApi';
 

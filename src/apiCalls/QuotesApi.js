@@ -8,7 +8,7 @@ export async function getQuotesFromApi({
   returnDate,
 }) {
   let promise = Axios.get(
-    `http://localhost:8081/browseroutes/${origin}/${destination}/${destinationCountryCode}/${startDate}/`
+    `http://localhost:8081/browseroutes/${origin}/${destination}/${destinationCountryCode}/${startDate}/${returnDate}`
   );
   return promise;
 }

@@ -1,27 +1,18 @@
-import React, { useState, useRef, useEffect, forwardRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Stack,
   Box,
   Text,
-  Input,
   Button,
   RadioGroup,
   Radio,
   Icon,
-  Popover,
-  PopoverTrigger,
-  PopoverArrow,
-  PopoverCloseButton,
-  PopoverHeader,
-  PopoverBody,
-  PopoverContent,
-  CloseButton,
   useTheme,
 } from '@chakra-ui/core';
 import LocationPicker from './LocationPicker';
-import { getAirportsApi } from '../apiCalls/AirportsApi';
 import ReactDatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import { getQuotesFromApi } from '../apiCalls/QuotesApi';
 
 function BoxCustom({ children }) {
   return (
@@ -35,11 +26,12 @@ function BoxCustom({ children }) {
   );
 }
 
-function FlightSearch() {
+function FlightSearch({ setQuotes }) {
   const [origin, setOrigin] = useState(null);
   const [destination, setDestination] = useState(null);
   const [startDate, setStartDate] = useState(new Date());
   const [returnDate, setReturnDate] = useState(new Date());
+  const [roundTrip, setRoundTrip] = useState(true);
   const theme = useTheme();
   // const open = () => setOriginListIsOpen(true);
   // const close = () => setOriginListIsOpen(false);
@@ -58,7 +50,15 @@ function FlightSearch() {
         </Text>
         <Box borderWidth='1px' rounded='4px' shadow='md'>
           <BoxCustom>
-            <RadioGroup defaultValue='2' spacing={5} isInline>
+            <RadioGroup
+              defaultValue='2'
+              spacing={5}
+              isInline
+              onChange={(e) =>
+                e.target.value === '2'
+                  ? setRoundTrip(true)
+                  : setRoundTrip(false)
+              }>
               <Radio variantColor='primary' value='1'>
                 One Way
               </Radio>
@@ -88,7 +88,64 @@ function FlightSearch() {
               />
             </Box>
 
-            <Button variantColor='primary'>
+            <Button
+              variantColor='primary'
+              onClick={() => {
+                (async () => {
+                  let quotes;
+                  if (origin && destination) {
+                    console.log('origin', origin);
+                    console.log('destination', destination);
+
+                    console.log(
+                      'startDate',
+                      startDate.toISOString().slice(0, 10)
+                    );
+                    console.log(
+                      'returnDate',
+                      returnDate.toISOString().slice(0, 10)
+                    );
+
+                    console.log(
+                      `call quotes ${origin.PlaceId}/${destination.PlaceId}/${
+                        origin?.CountryId
+                      }/${startDate
+                        .toISOString()
+                        .slice(0, 10)}/${returnDate.toISOString().slice(0, 10)}`
+                    );
+                    try {
+                      console.log('round trip', roundTrip);
+                      if (roundTrip) {
+                        quotes = await getQuotesFromApi({
+                          origin: origin.PlaceId,
+                          destination: destination.PlaceId,
+                          destinationCountryCode: destination?.CountryId.substring(
+                            0,
+                            2
+                          ),
+                          startDate: startDate.toISOString().slice(0, 10),
+                          returnDate: returnDate.toISOString().slice(0, 10),
+                        });
+                        console.log('quotes', quotes);
+                        setQuotes(quotes.data);
+                      } else {
+                        quotes = await getQuotesFromApi({
+                          origin: origin.PlaceId,
+                          destination: destination.PlaceId,
+                          destinationCountryCode: origin?.countryId?.substring(
+                            0,
+                            2
+                          ),
+                          startDate: startDate.toISOString().slice(0, 10),
+                        });
+                        setQuotes(quotes.data);
+                      }
+                    } catch (err) {
+                      console.log('Get quotes failed: ', err);
+                    }
+                  }
+                })();
+              }}>
               <Icon name='search' mr='4px' />
               Search
             </Button>
