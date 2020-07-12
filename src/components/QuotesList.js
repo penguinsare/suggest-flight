@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Text, Tooltip } from '@chakra-ui/core';
+import { Box, Flex, Text, Tooltip } from '@chakra-ui/core';
 
 function QuotesList({ quotes }) {
   const currency = quotes ? quotes.Currencies[0] : '';
@@ -18,54 +18,54 @@ function QuotesList({ quotes }) {
       });
 
       const origin = quotes.Places.find(
-        (place) => place.PlaceId == quote.OutboundLeg.OriginId
+        (place) => place.PlaceId === quote.OutboundLeg.OriginId
       );
       const destination = quotes.Places.find(
-        (place) => place.PlaceId == quote.OutboundLeg.DestinationId
+        (place) => place.PlaceId === quote.OutboundLeg.DestinationId
       );
       console.log('origin', origin);
       console.log('destination', destination);
-      const departureTime = new Date(quote.OutboundLeg.DepartureDate)
-        .toISOString()
-        .slice(11, 16);
+      const departureTime = new Date(
+        quote.OutboundLeg.DepartureDate
+      ).toDateString();
       console.log('departureTime', departureTime);
 
       return (
-        <Box
-          maxW='100%'
+        <Flex
+          flexDirection='row'
           borderWidth='1px'
           rounded='4px'
-          justifyContent='left'
-          d='flex'
+          p='12px'
+          justifyContent='center'
+          align='center'
+          textAlign='center'
           shadow='md'
           key={quote.QuoteId}>
-          <Box>{airlines}</Box>
-          <Box>
-            <Text>
-              {currency && currency.SymbolOnLeft && currency.Symbol}
-              {quote.MinPrice}
-              {currency && !currency.SymbolOnLeft && currency.Symbol}
-            </Text>
-          </Box>
-
+          <Box flex='1'>{airlines}</Box>
           {origin && (
-            <Box>
+            <Box flex='1'>
               <Tooltip label={origin.Name}>
                 <Text>{origin.IataCode}</Text>
               </Tooltip>
               <Text>{departureTime}</Text>
             </Box>
           )}
-
-          <Box>---</Box>
-          <Box>
+          <Box flex='1'>---</Box>
+          <Box flex='1'>
             {destination && (
               <Tooltip label={destination.Name}>
                 <Text>{destination.IataCode}</Text>
               </Tooltip>
             )}
           </Box>
-        </Box>
+          <Box flex='1'>
+            <Text>
+              {currency && currency.SymbolOnLeft && currency.Symbol}
+              {quote.MinPrice}
+              {currency && !currency.SymbolOnLeft && currency.Symbol}
+            </Text>
+          </Box>
+        </Flex>
       );
     })
   );

@@ -23,7 +23,7 @@ function LocationPicker({ setLocation, placeholder }) {
 
   const locationInputRef = useRef(null);
   useEffect(() => {
-    setLocationList(locationListFromApi);
+    setLocationList(locationListFromApi.filter((o) => o.CityId !== '-sky'));
   }, [locationListFromApi]);
   // useEffect(() => {}, []);
   return (
@@ -36,8 +36,8 @@ function LocationPicker({ setLocation, placeholder }) {
       closeOnEsc={true}>
       <PopoverTrigger>
         <Input
-          w='100%'
           mr='3px'
+          w='auto'
           placeholder={placeholder}
           value={placeName}
           onChange={(e) => {
@@ -54,7 +54,7 @@ function LocationPicker({ setLocation, placeholder }) {
         <PopoverBody>
           <Input
             ref={locationInputRef}
-            w='100%'
+            w='auto'
             mr='3px'
             marginBottom='0.5em'
             placeholder={placeholder}
@@ -72,10 +72,11 @@ function LocationPicker({ setLocation, placeholder }) {
                 })();
               } else if (e.target.value.length > 2) {
                 setLocationList(
-                  locationListFromApi.filter((o) =>
-                    o.PlaceName.toUpperCase().includes(
-                      e.target.value.toUpperCase()
-                    )
+                  locationListFromApi.filter(
+                    (o) =>
+                      o.PlaceName.toUpperCase().includes(
+                        e.target.value.toUpperCase()
+                      ) && o.CityId !== '-sky'
                   )
                 );
               }

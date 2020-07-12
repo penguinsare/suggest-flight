@@ -1,4 +1,4 @@
-import Axios from 'axios';
+import axios from '../libs/axios';
 
 export async function getQuotesFromApi({
   origin,
@@ -7,8 +7,8 @@ export async function getQuotesFromApi({
   startDate,
   returnDate,
 }) {
-  let promise = Axios.get(
-    `http://localhost:8081/browseroutes/${origin}/${destination}/${destinationCountryCode}/${startDate}/${returnDate}`
+  let promise = axios.get(
+    `/browseroutes/${origin}/${destination}/${destinationCountryCode}/${startDate}/${returnDate}`
   );
   return promise;
 }

@@ -1,4 +1,4 @@
-import { CSSReset, Box } from '@chakra-ui/core';
+import { CSSReset, Box, Alert, AlertIcon } from '@chakra-ui/core';
 import { ThemeProvider } from 'emotion-theming';
 import React, { useState, useEffect } from 'react';
 import styles from './App.module.css';
@@ -19,11 +19,17 @@ function App({ children }) {
     <ThemeProvider theme={myTheme}>
       <CSSReset />
       {children}
-      <Box maxWidth='90em' mx={['0.2em', '1em', '3em', '8em']} my='2em'>
+      <Box className={styles.container}>
         <Description />
         <FlightSearch setQuotes={(quotes) => setQuotes(quotes)} />
+        {quotes && quotes.error && (
+          <Alert status='error' my='1em'>
+            <AlertIcon />
+            {quotes.error}
+          </Alert>
+        )}
         {quotes && quotes.quotes && <Results quotes={quotes?.quotes} />}
-        {quotes && quotes.alternativeQuotes && (
+        {quotes && quotes.alternativeQuotes.length > 0 && (
           <Suggestions quotes={quotes?.alternativeQuotes} />
         )}
       </Box>

@@ -1,7 +1,7 @@
-import Axios from 'axios';
+import axios from '../libs/axios';
 
 export const getAirportsApi = async (payload) => {
-  let promise = Axios.get('http://localhost:8081/places?query=' + payload);
+  let promise = axios.get(`/places?query=${payload}`);
   //console.log('promise', promise);
   return promise;
 };

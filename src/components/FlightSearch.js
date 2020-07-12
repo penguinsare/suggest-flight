@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, forwardRef } from 'react';
 import {
   Stack,
   Box,
@@ -7,7 +7,7 @@ import {
   RadioGroup,
   Radio,
   Icon,
-  useTheme,
+  Spinner,
 } from '@chakra-ui/core';
 import LocationPicker from './LocationPicker';
 import ReactDatePicker from 'react-datepicker';
@@ -20,6 +20,7 @@ function BoxCustom({ children }) {
       p='3'
       d='flex'
       justifyContent='center'
+      alignItems='center'
       flexDirection={['column', 'column', 'row', 'row']}>
       {children}
     </Box>
@@ -32,11 +33,20 @@ function FlightSearch({ setQuotes }) {
   const [startDate, setStartDate] = useState(new Date());
   const [returnDate, setReturnDate] = useState(new Date());
   const [roundTrip, setRoundTrip] = useState(true);
-  const theme = useTheme();
-  // const open = () => setOriginListIsOpen(true);
-  // const close = () => setOriginListIsOpen(false);
+  const [loading, setLoading] = useState(false);
+  //const theme = useTheme();
 
-  // const originInputRef = useRef(null);
+  const CustomDatePickerInput = forwardRef(({ value, onClick }, ref) => (
+    <Button onClick={onClick} mr='3px' ref={ref}>
+      {value}
+    </Button>
+  ));
+
+  useEffect(() => {
+    console.log('Origin', origin);
+    console.log('Destination', destination);
+  }, [origin, destination]);
+
   useEffect(() => {
     console.log('Origin', origin);
     console.log('Destination', destination);
@@ -46,7 +56,7 @@ function FlightSearch({ setQuotes }) {
     <>
       <Stack mt={8}>
         <Text fontSize='24px' justifyContent='center' d='flex'>
-          Flights
+          Search Flight
         </Text>
         <Box borderWidth='1px' rounded='4px' shadow='md'>
           <BoxCustom>
@@ -76,23 +86,27 @@ function FlightSearch({ setQuotes }) {
               setLocation={(destination) => setDestination(destination)}
               placeholder={'Where to'}
             />
+
             <ReactDatePicker
               selected={startDate}
               onChange={(date) => setStartDate(date)}
+              customInput={<CustomDatePickerInput />}
             />
-            <Box d='flex' borderWidth={theme.fieldBorderWidth.thin}>
-              <ReactDatePicker
-                m='auto'
-                selected={returnDate}
-                onChange={(date) => setReturnDate(date)}
-              />
-            </Box>
+
+            <ReactDatePicker
+              disabled={!roundTrip}
+              selected={returnDate}
+              onChange={(date) => setReturnDate(date)}
+              customInput={<CustomDatePickerInput />}
+            />
 
             <Button
               variantColor='primary'
+              minWidth='5em'
               onClick={() => {
                 (async () => {
                   let quotes;
+                  setLoading(true);
                   if (origin && destination) {
                     console.log('origin', origin);
                     console.log('destination', destination);
@@ -128,6 +142,7 @@ function FlightSearch({ setQuotes }) {
                         });
                         console.log('quotes', quotes);
                         setQuotes(quotes.data);
+                        setLoading(false);
                       } else {
                         quotes = await getQuotesFromApi({
                           origin: origin.PlaceId,
@@ -139,6 +154,7 @@ function FlightSearch({ setQuotes }) {
                           startDate: startDate.toISOString().slice(0, 10),
                         });
                         setQuotes(quotes.data);
+                        setLoading(false);
                       }
                     } catch (err) {
                       console.log('Get quotes failed: ', err);
@@ -146,8 +162,7 @@ function FlightSearch({ setQuotes }) {
                   }
                 })();
               }}>
-              <Icon name='search' mr='4px' />
-              Search
+              {loading ? <Spinner /> : <Icon name='search' mr='4px' />}
             </Button>
           </BoxCustom>
         </Box>
